@@ -62,6 +62,33 @@ pub fn zero_mem_region(start: VirtAddr, end: VirtAddr) {
     unsafe { start.as_mut_ptr::<u8>().write_bytes(0, size) }
 }
 
+/// Obtain offset given the bit value and field size
+#[macro_export]
+macro_rules! OFFSET {
+    ($bit_value: expr, $field_size: expr) => {
+        (($bit_value) / ($field_size))
+    };
+}
+
+/// Obtain bit position given the bit value and field size
+#[macro_export]
+macro_rules! BITPOS {
+    ($bit_value: expr, $field_size: expr) => {
+        (($bit_value) % ($field_size))
+    };
+}
+
+/// Obtain offset and bit position given the bit value and field size
+#[macro_export]
+macro_rules! OFFSET_BITPOS {
+    ($bit_value: expr, $field_size: expr) => {
+        (
+            $crate::OFFSET!($bit_value, $field_size),
+            $crate::BITPOS!($bit_value, $field_size),
+        )
+    };
+}
+
 /// Obtain bit for a given position
 #[macro_export]
 macro_rules! BIT {

@@ -22,6 +22,7 @@ use svsm::console::{init_console, install_console_logger};
 use svsm::cpu::control_regs::{cr0_init, cr4_init};
 use svsm::cpu::cpuid::{dump_cpuid_table, register_cpuid_table};
 use svsm::cpu::efer::efer_init;
+use svsm::cpu::features::init_cpuid_features;
 use svsm::cpu::gdt;
 use svsm::cpu::ghcb::current_ghcb;
 use svsm::cpu::idt::svsm::{early_idt_init, idt_init};
@@ -301,6 +302,7 @@ pub extern "C" fn svsm_start(li: &KernelLaunchInfo, vb_addr: usize) {
 
     init_cpuid_table(VirtAddr::from(launch_info.cpuid_page));
     dump_cpuid_table();
+    init_cpuid_features();
 
     let secrets_page_virt = VirtAddr::from(launch_info.secrets_page);
     secrets_page_mut().copy_from(secrets_page_virt);
