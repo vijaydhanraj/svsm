@@ -6,7 +6,7 @@
 
 use crate::address::{Address, PhysAddr, VirtAddr};
 use crate::cpu::control_regs::write_cr3;
-use crate::cpu::features::{cpu_has_nx, cpu_has_pge};
+use crate::cpu::features::{cpu_has_feature, X86_FEATURE_NX, X86_FEATURE_PGE};
 use crate::cpu::flush_tlb_global_sync;
 use crate::error::SvsmError;
 use crate::locking::{LockGuard, SpinLock};
@@ -50,10 +50,10 @@ pub fn paging_init(platform: &dyn SvsmPlatform, vtom: u64) {
     init_encrypt_mask(platform, vtom.try_into().unwrap());
 
     let mut feature_mask = PTEntryFlags::all();
-    if !cpu_has_nx() {
+    if !cpu_has_feature(X86_FEATURE_NX) {
         feature_mask.remove(PTEntryFlags::NX);
     }
-    if !cpu_has_pge() {
+    if !cpu_has_feature(X86_FEATURE_PGE) {
         feature_mask.remove(PTEntryFlags::GLOBAL);
     }
     reinit_feature_mask(&feature_mask);
