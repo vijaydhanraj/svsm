@@ -54,7 +54,7 @@ asm_entry_\name:
 	pushq	$\vector
 	push_regs
 	movq	%rsp, %rdi
-	call	ex_handler_\handler
+	call	\handler
 	jmp	default_return
 .endm
 
@@ -72,79 +72,79 @@ return_user:
 	jmp default_iret
 
 // #DE Divide-by-Zero-Error Exception (Vector 0)
-default_entry_no_ist	name=de		handler=panic			error_code=0	vector=0
+default_entry_no_ist	name=de		handler=ex_handler_panic		error_code=0	vector=0
 
 // #DB Debug Exception (Vector 1)
-default_entry_no_ist	name=db		handler=debug			error_code=0	vector=1
+default_entry_no_ist	name=db		handler=ex_handler_debug		error_code=0	vector=1
 
 // NMI Non-Maskable-Interrupt Exception (Vector 2)
-default_entry_no_ist	name=nmi	handler=panic			error_code=0	vector=2
+default_entry_no_ist	name=nmi	handler=ex_handler_panic		error_code=0	vector=2
 
 // #BP Breakpoint Exception (Vector 3)
-default_entry_no_ist	name=bp		handler=breakpoint		error_code=0	vector=3
+default_entry_no_ist	name=bp		handler=ex_handler_breakpoint		error_code=0	vector=3
 
 // #OF Overflow Exception (Vector 4)
-default_entry_no_ist	name=of		handler=panic			error_code=0	vector=4
+default_entry_no_ist	name=of		handler=ex_handler_panic		error_code=0	vector=4
 
 // #BR Bound-Range Exception (Vector 5)
-default_entry_no_ist	name=br		handler=panic			error_code=0	vector=5
+default_entry_no_ist	name=br		handler=ex_handler_panic		error_code=0	vector=5
 
 // #UD Invalid-Opcode Exception (Vector 6)
-default_entry_no_ist	name=ud		handler=panic			error_code=0	vector=6
+default_entry_no_ist	name=ud		handler=ex_handler_panic		error_code=0	vector=6
 
 // #NM Device-Not-Available Exception (Vector 7)
-default_entry_no_ist	name=nm		handler=panic			error_code=0	vector=7
+default_entry_no_ist	name=nm		handler=ex_handler_panic		error_code=0	vector=7
 
 // #DF Double-Fault Exception (Vector 8)
-default_entry_no_ist	name=df		handler=double_fault		error_code=1	vector=8
+default_entry_no_ist	name=df		handler=ex_handler_double_fault		error_code=1	vector=8
 
 // Coprocessor-Segment-Overrun Exception (Vector 9)
 // No handler - reserved vector
 
 // #TS Invalid-TSS Exception (Vector 10)
-default_entry_no_ist	name=ts		handler=panic			error_code=1	vector=10
+default_entry_no_ist	name=ts		handler=ex_handler_panic		error_code=1	vector=10
 
 // #NP Segment-Not-Present Exception (Vector 11)
-default_entry_no_ist	name=np		handler=panic			error_code=1	vector=11
+default_entry_no_ist	name=np		handler=ex_handler_panic		error_code=1	vector=11
 
 // #SS Stack Exception (Vector 12)
-default_entry_no_ist	name=ss		handler=panic			error_code=1	vector=12
+default_entry_no_ist	name=ss		handler=ex_handler_panic		error_code=1	vector=12
 
 // #GP General-Protection Exception (Vector 13)
-default_entry_no_ist	name=gp		handler=general_protection	error_code=1	vector=13
+default_entry_no_ist	name=gp		handler=ex_handler_general_protection	error_code=1	vector=13
 
 // #PF Page-Fault Exception (Vector 14)
-default_entry_no_ist	name=pf		handler=page_fault		error_code=1	vector=14
+default_entry_no_ist	name=pf		handler=ex_handler_page_fault		error_code=1	vector=14
 
 // Vector 15 not defined
 
 // #MF x87 Floating-Point Exception-Pending (Vector 16)
-default_entry_no_ist	name=mf		handler=panic			error_code=0	vector=16
+default_entry_no_ist	name=mf		handler=ex_handler_panic		error_code=0	vector=16
 
 // #AC Alignment-Check Exception (Vector 17)
-default_entry_no_ist	name=ac		handler=panic			error_code=1	vector=17
+default_entry_no_ist	name=ac		handler=ex_handler_panic		error_code=1	vector=17
 
 // #MC Machine-Check Exception (Vector 18)
-default_entry_no_ist	name=mce	handler=panic			error_code=0	vector=18
+default_entry_no_ist	name=mce	handler=ex_handler_panic		error_code=0	vector=18
 
 // #XF SIMD Floating-Point Exception (Vector 19)
-default_entry_no_ist	name=xf		handler=panic			error_code=0	vector=19
+default_entry_no_ist	name=xf		handler=ex_handler_panic		error_code=0	vector=19
 
 // Vector 20 not defined
 
 // #CP Control-Protection Exception (Vector 21)
-default_entry_no_ist	name=cp		handler=panic			error_code=1	vector=21
+default_entry_no_ist	name=cp		handler=ex_handler_panic		error_code=1	vector=21
 
 // Vectors 22-27 not defined
 
 // #HV Hypervisor Injection Exception (Vector 28)
-default_entry_no_ist	name=hv		handler=hypervisor_injection	error_code=0	vector=28
+default_entry_no_ist	name=hv		handler=ex_handler_hypervisor_injection error_code=0	vector=28
 
 // #VC VMM Communication Exception (Vector 29)
-default_entry_no_ist	name=vc		handler=vmm_communication	error_code=1	vector=29
+default_entry_no_ist	name=vc		handler=ex_handler_vmm_communication	error_code=1	vector=29
 
 // #SX Security Exception (Vector 30)
-default_entry_no_ist	name=sx		handler=panic			error_code=1	vector=30
+default_entry_no_ist	name=sx		handler=ex_handler_panic		error_code=1	vector=30
 
 // INT 0x80 system call handler
-default_entry_no_ist	name=int80	handler=system_call		error_code=0	vector=0x80
+default_entry_no_ist	name=int80	handler=ex_handler_system_call		error_code=0	vector=0x80
