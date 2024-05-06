@@ -12,6 +12,16 @@ pub const EFER: u32 = 0xC000_0080;
 pub const SEV_STATUS: u32 = 0xC001_0131;
 pub const SEV_GHCB: u32 = 0xC001_0130;
 pub const MSR_GS_BASE: u32 = 0xC000_0101;
+pub const MSR_IA32_APIC_BASE: u32 = 0x1b;
+
+// X2APIC MSRs
+pub const MSR_IA32_X2APIC_APICID: u32 = 0x802;
+pub const MSR_IA32_X2APIC_EOI: u32 = 0x80b;
+pub const MSR_IA32_X2APIC_SIVR: u32 = 0x80f;
+pub const MSR_IA32_X2APIC_ISR0: u32 = 0x810;
+pub const MSR_IA32_X2APIC_ISR7: u32 = 0x817;
+pub const MSR_IA32_X2APIC_ICR: u32 = 0x830;
+pub const MSR_IA32_X2APIC_SELF_IPI: u32 = 0x83f;
 
 pub fn read_msr(msr: u32) -> Result<u64, SvsmError> {
     let eax: u32;
@@ -122,11 +132,11 @@ pub fn read_flags() -> u64 {
 }
 
 pub fn wrmsr(msr_index: u32, value: u64) -> Result<(), SvsmError> {
-    let platform =  SVSM_PLATFORM.as_dyn_ref();
+    let platform = SVSM_PLATFORM.as_dyn_ref();
     platform.msr_write(msr_index, value)
 }
 
 pub fn rdmsr(msr_index: u32) -> Result<u64, SvsmError> {
-    let platform =  SVSM_PLATFORM.as_dyn_ref();
+    let platform = SVSM_PLATFORM.as_dyn_ref();
     platform.msr_read(msr_index)
 }
