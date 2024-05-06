@@ -148,3 +148,6 @@ default_entry_no_ist	name=sx		handler=ex_handler_panic		error_code=1	vector=30
 
 // INT 0x80 system call handler
 default_entry_no_ist	name=int80	handler=ex_handler_system_call		error_code=0	vector=0x80
+
+// IPI handler (Vector 0xE0)
+default_entry_no_ist	name=ipi	handler=intr_handler_ipi		error_code=0	vector=0xE0
