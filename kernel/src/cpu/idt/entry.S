@@ -172,7 +172,7 @@ restart_hv:
 	movq	2*8(%rsp), %rax
 	movq	%rax, -2*8(%rcx)
 	leaq	-4*8(%rcx), %rsp
-	
+
 continue_hv:
 	// At this point, only the dummy error code and first three registers
 	// have been pushed onto the stack.  Push the remainder o construct a
@@ -332,3 +332,6 @@ default_entry_no_ist	name=sx		handler=panic			error_code=1	vector=30
 
 // INT 0x80 system call handler
 default_entry_no_ist	name=int80	handler=system_call		error_code=0	vector=0x80
+
+// IPI handler (Vector 0xE0)
+default_entry_no_ist	name=ipi	handler=ipi			error_code=0	vector=0xE0

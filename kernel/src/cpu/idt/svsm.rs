@@ -16,6 +16,7 @@ use super::common::{
     OF_VECTOR, PF_VECTOR, SS_VECTOR, SX_VECTOR, TS_VECTOR, UD_VECTOR, VC_VECTOR, XF_VECTOR,
 };
 use crate::address::VirtAddr;
+use crate::cpu::lapic::LAPIC;
 use crate::cpu::percpu::this_cpu_unsafe;
 use crate::cpu::X86ExceptionContext;
 use crate::debug::gdbstub::svsm_gdbstub::handle_debug_exception;
@@ -51,6 +52,7 @@ extern "C" {
     fn asm_entry_vc();
     fn asm_entry_sx();
     fn asm_entry_int80();
+    fn asm_entry_ipi();
 
     pub static mut HV_DOORBELL_ADDR: usize;
 }
@@ -89,6 +91,7 @@ pub fn early_idt_init() {
 
     // Interupts
     idt.set_entry(0x80, IdtEntry::user_entry(asm_entry_int80));
+    idt.set_entry(0xE0, IdtEntry::entry(asm_entry_ipi));
 
     // Load IDT
     idt.load();
@@ -251,6 +254,15 @@ pub extern "C" fn ex_handler_panic(ctx: &mut X86ExceptionContext, vector: usize)
         "Unhandled exception {} RIP {:#018x} error code: {:#018x} RSP: {:#018x} SS: {:#x}",
         vector, rip, err, rsp, ss
     );
+}
+
+#[no_mangle]
+extern "C" fn ex_handler_ipi(_ctx: &mut X86ExceptionContext, _vector: usize) {
+    // A vcpu can enter a waiting state for a specific event by executing a
+    // halt command. It can be woken up by sending an IPI interrupt through the
+    // local APIC to the halted vcpu. This IPI doesn't require any action from
+    // the halted vcpu, hence its interrupt handler simply doesn an eoi and returns.
+    (*LAPIC).eoi();
 }
 
 global_asm!(include_str!("entry.S"), options(att_syntax));
