@@ -6,6 +6,7 @@
 
 use super::super::control_regs::read_cr2;
 use super::super::extable::handle_exception_table;
+use super::super::msr::{read_msr, MSR_IA32_X2APIC_ISR0};
 use super::super::percpu::{current_task, this_cpu};
 use super::super::tss::IST_DF;
 use super::super::vc::handle_vc_exception;
@@ -16,6 +17,7 @@ use super::common::{
     OF_VECTOR, PF_VECTOR, SS_VECTOR, SX_VECTOR, TS_VECTOR, UD_VECTOR, VC_VECTOR, XF_VECTOR,
 };
 use crate::address::VirtAddr;
+use crate::{BIT, OFFSET_BITPOS};
 use crate::cpu::lapic::LAPIC;
 use crate::cpu::X86ExceptionContext;
 use crate::debug::gdbstub::svsm_gdbstub::handle_debug_exception;
@@ -229,6 +231,15 @@ extern "C" fn ex_handler_system_call(ctxt: &mut X86ExceptionContext) {
         ctxt.regs.rax = !0;
         return;
     };
+
+    // If vector 0x80 is set in the APIC ISR then this is an external
+    // interrupt. Either from broken hardware or injected by a malicious VMM.
+    let vector = ctxt.vector as u32;
+    let (offset, bitpos) = OFFSET_BITPOS!(vector, 32);
+    if read_msr(MSR_IA32_X2APIC_ISR0 + offset) as u32 & BIT!(bitpos) != 0 {
+        panic!("Unexpected external interrupt {}!", vector);
+
+    }
 
     ctxt.regs.rax = match input {
         SYS_HELLO => sys_hello(),
