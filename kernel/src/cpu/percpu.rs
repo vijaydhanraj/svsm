@@ -7,8 +7,10 @@
 extern crate alloc;
 
 use super::gdt_mut;
+use super::idt::common::enable_irq;
 use super::tss::{X86Tss, IST_DF};
 use crate::address::{Address, PhysAddr, VirtAddr};
+use crate::cpu::lapic::LAPIC;
 use crate::cpu::tss::TSS_LIMIT;
 use crate::cpu::vmsa::init_guest_vmsa;
 use crate::cpu::vmsa::vmsa_mut_ref_from_vaddr;
@@ -523,7 +525,12 @@ impl PerCpu {
 
     // Setup code which needs to run on the target CPU
     pub fn setup_on_cpu(&mut self, platform: &dyn SvsmPlatform) -> Result<(), SvsmError> {
-        platform.setup_percpu_current(self)
+        platform.setup_percpu_current(self)?;
+
+        (*LAPIC).init();
+        enable_irq();
+
+        Ok(())
     }
 
     pub fn setup_idle_task(&mut self, entry: extern "C" fn()) -> Result<(), SvsmError> {
