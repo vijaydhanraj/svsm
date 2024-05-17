@@ -337,7 +337,7 @@ impl GHCB {
 
         let ghcb_address = VirtAddr::from(self as *const GHCB);
         let ghcb_pa = u64::from(virt_to_phys(ghcb_address));
-        write_msr(SEV_GHCB, ghcb_pa);
+        write_msr(SEV_GHCB, ghcb_pa).unwrap();
         raw_vmgexit();
 
         let sw_exit_info_1 = self.get_exit_info_1_valid()?;

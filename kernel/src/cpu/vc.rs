@@ -522,7 +522,7 @@ mod tests {
         const MSR_SEV_STATUS: u32 = 0xc0010131;
         const MSR_SEV_STATUS_SEV_SNP_ENABLED: u64 = 0b10;
 
-        let sev_status = read_msr(MSR_SEV_STATUS);
+        let sev_status = read_msr(MSR_SEV_STATUS).unwrap();
         assert_ne!(sev_status & MSR_SEV_STATUS_SEV_SNP_ENABLED, 0);
     }
 
@@ -534,7 +534,7 @@ mod tests {
     #[test]
     #[cfg_attr(not(test_in_svsm), ignore = "Can only be run inside guest")]
     fn test_rdmsr_apic() {
-        let apic_base = verify_ghcb_gets_altered(|| read_msr(MSR_APIC_BASE));
+        let apic_base = verify_ghcb_gets_altered(|| read_msr(MSR_APIC_BASE).unwrap());
         assert_eq!(apic_base & APIC_BASE_PHYS_ADDR_MASK, APIC_DEFAULT_PHYS_BASE);
     }
 
@@ -542,7 +542,7 @@ mod tests {
     #[cfg_attr(not(test_in_svsm), ignore = "Can only be run inside guest")]
     fn test_rdmsr_debug_ctl() {
         const MSR_DEBUG_CTL: u32 = 0x1d9;
-        let apic_base = verify_ghcb_gets_altered(|| read_msr(MSR_DEBUG_CTL));
+        let apic_base = verify_ghcb_gets_altered(|| read_msr(MSR_DEBUG_CTL).unwrap());
         assert_eq!(apic_base, 0);
     }
 
@@ -552,8 +552,8 @@ mod tests {
     #[cfg_attr(not(test_in_svsm), ignore = "Can only be run inside guest")]
     fn test_wrmsr_tsc_aux() {
         let test_val = 0x1234;
-        verify_ghcb_gets_altered(|| write_msr(MSR_TSC_AUX, test_val));
-        let readback = verify_ghcb_gets_altered(|| read_msr(MSR_TSC_AUX));
+        verify_ghcb_gets_altered(|| write_msr(MSR_TSC_AUX, test_val).unwrap());
+        let readback = verify_ghcb_gets_altered(|| read_msr(MSR_TSC_AUX).unwrap());
         assert_eq!(test_val, readback);
     }
 
@@ -605,8 +605,9 @@ mod tests {
     #[test]
     #[cfg_attr(not(test_in_svsm), ignore = "Can only be run inside guest")]
     fn test_rdtscp() {
-        let expected_pid = u32::try_from(verify_ghcb_gets_altered(|| read_msr(MSR_TSC_AUX)))
-            .expect("pid should be 32 bits");
+        let expected_pid =
+            u32::try_from(verify_ghcb_gets_altered(|| read_msr(MSR_TSC_AUX).unwrap()))
+                .expect("pid should be 32 bits");
         let RdtscpOut {
             timestamp: mut prev,
             pid,

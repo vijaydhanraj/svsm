@@ -45,6 +45,8 @@ pub enum SvsmError {
     MissingCAA,
     /// Error reported when there is no secrets page set up.
     MissingSecrets,
+    /// Errors related to accessing Model-Specific Registers
+    Msr,
     /// Invalid address, usually provided by the guest
     InvalidAddress,
     /// Errors related to firmware parsing
