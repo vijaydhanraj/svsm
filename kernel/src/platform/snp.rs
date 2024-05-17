@@ -114,9 +114,17 @@ impl SvsmPlatform for SnpPlatform {
         pvalidate_range(region, op)
     }
 
+    fn msr_write(&self, msr_index: u32, value: u64) -> Result<(), SvsmError> {
+        current_ghcb().wrmsr_raw(msr_index as u64, value & 0xFFFF_FFFF, value >> 32)
+    }
+
+    fn msr_read(&self, msr_index: u32) -> Result<u64, SvsmError> {
+        current_ghcb().rdmsr_raw(msr_index as u64)
+    }
+
     fn eoi(&self) {
         // 0x80E is the X2APIC EOI MSR.
         // Errors here cannot be handled but should not be grounds for panic.
-        let _ = current_ghcb().wrmsr(0x80E, 0);
+        let _ = self.msr_write(0x80E, 0);
     }
 }

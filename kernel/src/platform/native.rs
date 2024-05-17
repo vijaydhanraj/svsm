@@ -6,6 +6,7 @@
 
 use crate::address::{PhysAddr, VirtAddr};
 use crate::cpu::cpuid::CpuidResult;
+use crate::cpu::msr::{read_msr, write_msr};
 use crate::cpu::percpu::PerCpu;
 use crate::error::SvsmError;
 use crate::platform::{IOPort, PageEncryptionMasks, PageStateChangeOp, SvsmPlatform};
@@ -79,5 +80,13 @@ impl SvsmPlatform for NativePlatform {
 
     fn eoi(&self) {
         todo!();
+    }
+
+    fn msr_write(&self, msr_index: u32, value: u64) -> Result<(), SvsmError> {
+        write_msr(msr_index, value)
+    }
+
+    fn msr_read(&self, msr_index: u32) -> Result<u64, SvsmError> {
+        read_msr(msr_index)
     }
 }

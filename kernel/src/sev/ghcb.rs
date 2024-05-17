@@ -231,10 +231,6 @@ impl GHCB {
         Ok(())
     }
 
-    pub fn wrmsr(&mut self, msr_index: u32, value: u64) -> Result<(), SvsmError> {
-        self.wrmsr_raw(msr_index as u64, value & 0xFFFF_FFFF, value >> 32)
-    }
-
     pub fn wrmsr_regs(&mut self, regs: &X86GeneralRegs) -> Result<(), SvsmError> {
         self.wrmsr_raw(regs.rcx as u64, regs.rax as u64, regs.rdx as u64)
     }
@@ -248,6 +244,15 @@ impl GHCB {
 
         self.vmgexit(GHCBExitCode::MSR, 1, 0)?;
         Ok(())
+    }
+
+    pub fn rdmsr_raw(&mut self, rcx: u64) -> Result<u64, SvsmError> {
+        let regs = &mut X86GeneralRegs::default();
+        regs.rcx = rcx as usize;
+        self.rdmsr_regs(regs)?;
+
+        let ret = (regs.rax as u64) | (regs.rdx as u64) << 32;
+        Ok(ret)
     }
 
     pub fn rdmsr_regs(&mut self, regs: &mut X86GeneralRegs) -> Result<(), SvsmError> {

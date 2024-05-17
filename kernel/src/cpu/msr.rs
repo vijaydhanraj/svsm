@@ -5,6 +5,7 @@
 // Author: Joerg Roedel <jroedel@suse.de>
 
 use crate::error::SvsmError;
+use crate::platform::SVSM_PLATFORM;
 use core::arch::asm;
 
 pub const EFER: u32 = 0xC000_0080;
@@ -118,4 +119,14 @@ pub fn read_flags() -> u64 {
              options(att_syntax));
     }
     rax
+}
+
+pub fn wrmsr(msr_index: u32, value: u64) -> Result<(), SvsmError> {
+    let platform =  SVSM_PLATFORM.as_dyn_ref();
+    platform.msr_write(msr_index, value)
+}
+
+pub fn rdmsr(msr_index: u32) -> Result<u64, SvsmError> {
+    let platform =  SVSM_PLATFORM.as_dyn_ref();
+    platform.msr_read(msr_index)
 }
