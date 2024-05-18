@@ -78,9 +78,6 @@ pub trait SvsmPlatform {
         op: PvalidateOp,
     ) -> Result<(), SvsmError>;
 
-    /// Perform an EOI of the current interrupt.
-    fn eoi(&self);
-
     /// Write to MSR
     fn msr_write(&self, msr_index: u32, value: u64) -> Result<(), SvsmError>;
 

@@ -78,10 +78,6 @@ impl SvsmPlatform for NativePlatform {
         Ok(())
     }
 
-    fn eoi(&self) {
-        todo!();
-    }
-
     fn msr_write(&self, msr_index: u32, value: u64) -> Result<(), SvsmError> {
         write_msr(msr_index, value)
     }

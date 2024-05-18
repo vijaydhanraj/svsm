@@ -70,3 +70,9 @@ impl LocalApic {
         }
     }
 }
+
+#[no_mangle]
+pub extern "C" fn common_isr_handler(_vector: usize) {
+    // Treat any unhandled interrupt as a spurious interrupt.
+    (*LAPIC).eoi();
+}

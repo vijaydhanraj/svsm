@@ -1,8 +1,11 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0 Copyright (c) Microsoft Corporation
+// SPDX-License-Identifier: MIT OR Apache-2.0
+//
+// Copyright (c) Microsoft Corporation
+//
 // Author: Jon Lange (jlange@microsoft.com)
 
 use crate::address::VirtAddr;
-use crate::cpu::idt::svsm::common_isr_handler;
+use crate::cpu::lapic::common_isr_handler;
 use crate::error::SvsmError;
 use crate::mm::page_visibility::{make_page_private, make_page_shared};
 use crate::mm::virt_to_phys;
